@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author 南顾北衫
@@ -36,8 +35,7 @@ public class RemotingUtil {
         return isLinuxPlatform;
     }
 
-    public static String addChannel(Channel channel) {
-        String id = UUID.randomUUID().toString();
+    public static String addChannel(Channel channel, String id) {
         Attribute<String> attr = channel.attr(ID_ATTR);
         attr.set(id);
         CHANNEL_MAP.put(id, channel);

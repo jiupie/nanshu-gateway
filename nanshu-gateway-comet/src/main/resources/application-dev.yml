@@ -3,3 +3,5 @@ rocketmq:
 dubbo:
   registry:
     address: nacos://localhost:8848?namespace=dev
+grpc:
+  port: 10235

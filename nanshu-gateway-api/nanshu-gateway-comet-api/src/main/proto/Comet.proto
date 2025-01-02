@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_package = "com.ngbs.nanshu.gateway.comet.api";
+option java_multiple_files = false;
+
+option java_outer_classname = "CometService";
+
+
+service CometMsg {
+    rpc PushMsg (PushMsgReq) returns (PushMsgResponse);
+    rpc BroadcastRoom(BroadcastRoomReq) returns (BroadcastRoomReply);
+}
+
+message BroadcastRoomReq {
+    string room_id = 1;
+    Proto data = 2;
+}
+
+message BroadcastRoomReply{}
+
+message PushMsgReq {
+    repeated string keys = 1;
+    int32 proto_op = 2;
+    Proto data = 3;
+}
+message Proto {
+    int32 ver = 1;
+    int32 op = 2;
+    int32 seq = 3;
+    bytes body = 4;
+}
+
+message PushMsgResponse {}

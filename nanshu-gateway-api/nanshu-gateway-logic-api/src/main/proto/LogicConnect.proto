@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option java_package = "com.ngbs.nashu.gateway.logic.api";
+option java_multiple_files = false;
+
+option java_outer_classname = "LogicConnectService";
+
+
+// The greeting service definition.
+service LogicConnect {
+    rpc Connect (ConnectReq) returns (ConnectResponse);
+    rpc HeartBeat (HeartbeatRequest) returns (HeartbeatResponse);
+    rpc DisConnect (DisconnectReq) returns (DisconnectResponse);
+}
+
+
+
+message ConnectReq {
+    string token = 1;
+    string server_id = 2;
+}
+
+message ConnectResponse {
+    string user_id = 1;
+    string key = 2;
+}
+
+
+message HeartbeatRequest {
+    string key = 1;
+    string server_id = 2;
+}
+
+message HeartbeatResponse {
+}
+
+message DisconnectReq {
+    string key = 1;
+    string server = 2;
+}
+message DisconnectResponse {
+
+}

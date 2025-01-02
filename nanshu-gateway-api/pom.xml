@@ -22,4 +22,5 @@
         <module>nanshu-gateway-logic-api</module>
         <module>nanshu-gateway-comet-api</module>
     </modules>
+
 </project>

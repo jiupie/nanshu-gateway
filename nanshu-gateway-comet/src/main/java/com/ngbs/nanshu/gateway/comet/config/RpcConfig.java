@@ -1,7 +1,9 @@
 package com.ngbs.nanshu.gateway.comet.config;
 
-import com.ngbs.nashu.gateway.logic.api.GatewayConnect;
-import org.apache.dubbo.config.annotation.DubboReference;
+import com.ngbs.nashu.gateway.logic.api.LogicConnectGrpc;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,11 +12,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RpcConfig {
+    @Bean
+    public ManagedChannel getGatewayConnect() {
+        String target = "127.0.0.1:10233";
+        return ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+    }
 
-    @DubboReference
-    private GatewayConnect gatewayConnect;
-
-    public GatewayConnect getGatewayConnect() {
-        return gatewayConnect;
+    @Bean
+    public LogicConnectGrpc.LogicConnectBlockingStub logicConnectGrpc(ManagedChannel managedChannel) {
+        return LogicConnectGrpc.newBlockingStub(managedChannel);
     }
 }

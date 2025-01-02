@@ -4,6 +4,6 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-dubbo:
-  registry:
-    address: nacos://localhost:8848?namespace=dev
+
+grpc:
+  port: 10233

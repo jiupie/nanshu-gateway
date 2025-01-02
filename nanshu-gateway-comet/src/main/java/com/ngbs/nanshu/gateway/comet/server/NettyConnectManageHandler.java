@@ -1,12 +1,13 @@
 package com.ngbs.nanshu.gateway.comet.server;
 
-import com.ngbs.nanshu.gateway.comet.application.producer.ChannelMessageProducer;
 import com.ngbs.nanshu.gateway.comet.config.SpringContextHolder;
+import com.ngbs.nashu.gateway.logic.api.LogicConnectGrpc;
+import com.ngbs.nashu.gateway.logic.api.LogicConnectService;
+import io.grpc.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
@@ -26,8 +27,8 @@ public class NettyConnectManageHandler extends ChannelDuplexHandler {
         super.channelInactive(ctx);
         String channelId = RemotingUtil.getChannelId(ctx.channel());
         if (StringUtils.hasText(channelId)) {
-            ChannelMessageProducer channelMessageProducer = SpringContextHolder.getBean(ChannelMessageProducer.class);
-            channelMessageProducer.sendOfflineMsg(channelId);
+            LogicConnectService.DisconnectReq disconnectReq = LogicConnectService.DisconnectReq.newBuilder().setKey(channelId).build();
+            SpringContextHolder.getBean(LogicConnectGrpc.LogicConnectBlockingStub.class).disConnect(disconnectReq);
         }
     }
 
@@ -43,10 +44,6 @@ public class NettyConnectManageHandler extends ChannelDuplexHandler {
             if (event.state().equals(IdleState.ALL_IDLE)) {
                 RemotingUtil.closeChannel(ctx.channel());
             }
-        }
-
-        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            RemotingUtil.addChannel(ctx.channel());
         }
         ctx.fireUserEventTriggered(evt);
     }

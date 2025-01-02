@@ -72,8 +72,8 @@ public class NettyServer {
         loadProcess();
     }
 
-    public void server() {
-
+    public String server() {
+       return serverBootstrap.config().localAddress().toString();
     }
 
     private void loadProcess() {

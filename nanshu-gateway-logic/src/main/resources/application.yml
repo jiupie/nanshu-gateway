@@ -8,12 +8,3 @@ rocketmq:
     group: gatewayApiConsumerGroup
   producer:
     group: gatewayApiProduceGroup
-dubbo:
-  application:
-    register-mode: instance
-    qos-enable: false
-  scan:
-    base-packages: com.ngbs.nanshu.gateway.logic.rpc
-  protocol:
-    prefer-serialization: hessian2
-    port: 20882

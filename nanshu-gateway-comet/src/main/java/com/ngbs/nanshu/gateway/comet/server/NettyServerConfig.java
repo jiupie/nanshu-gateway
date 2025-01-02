@@ -15,7 +15,7 @@ public class NettyServerConfig {
 
     private int listenPort=8888;
 
-    private int serverChannelMaxIdleTimeSeconds = 180;
+    private int serverChannelMaxIdleTimeSeconds = 60;
 
 
     public int getServerChannelMaxIdleTimeSeconds() {

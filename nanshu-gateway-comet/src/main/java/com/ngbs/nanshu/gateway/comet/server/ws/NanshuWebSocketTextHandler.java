@@ -2,8 +2,9 @@ package com.ngbs.nanshu.gateway.comet.server.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ngbs.gateway.common.model.req.GatewayBaseReq;
-import com.ngbs.nanshu.gateway.comet.application.producer.ChannelMessageProducer;
 import com.ngbs.nanshu.gateway.comet.config.SpringContextHolder;
+import com.ngbs.nashu.gateway.logic.api.LogicConnectGrpc;
+import com.ngbs.nashu.gateway.logic.api.LogicConnectService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -11,6 +12,7 @@ import io.netty.util.Attribute;
 
 import java.util.List;
 
+import static com.ngbs.gateway.common.model.req.GatewayRequestConstant.HEARTBEAT;
 import static com.ngbs.nanshu.gateway.comet.server.RemotingUtil.ID_ATTR;
 
 /**
@@ -36,7 +38,11 @@ public class NanshuWebSocketTextHandler extends MessageToMessageCodec<TextWebSoc
             ctx.channel().close();
             return;
         }
-        ChannelMessageProducer channelMessageProducer = SpringContextHolder.getBean(ChannelMessageProducer.class);
-        channelMessageProducer.channelMsgTopic(gatewayBaseReq);
+        String type = gatewayBaseReq.getType();
+        if (type.equals(HEARTBEAT)) {
+            LogicConnectService.HeartbeatRequest heartbeatRequest = LogicConnectService.HeartbeatRequest.newBuilder().setKey(gatewayBaseReq.getChannelId()).build();
+            SpringContextHolder.getBean(LogicConnectGrpc.LogicConnectBlockingStub.class).heartBeat(heartbeatRequest);
+        }
+
     }
 }
