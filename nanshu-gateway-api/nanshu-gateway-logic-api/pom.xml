@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.ngbs.nanshu.gateway</groupId>
         <artifactId>nanshu-gateway-api</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>nanshu-gateway-logic-api</artifactId>
