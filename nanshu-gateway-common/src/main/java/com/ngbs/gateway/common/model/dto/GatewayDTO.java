@@ -1,4 +1,4 @@
-package com.ngbs.gateway.common.model.vo;
+package com.ngbs.gateway.common.model.dto;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * @date 2024/8/11
  */
 @Data
-public class GatewayVO<T> {
+public class GatewayDTO<T> {
     List<String> channelIds;
     private T data;
 }

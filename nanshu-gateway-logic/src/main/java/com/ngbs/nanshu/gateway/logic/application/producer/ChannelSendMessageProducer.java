@@ -1,6 +1,7 @@
 package com.ngbs.nanshu.gateway.logic.application.producer;
 
-import com.ngbs.gateway.common.model.vo.GatewayVO;
+import com.ngbs.gateway.common.constants.NanshuGatewayConstants;
+import com.ngbs.gateway.common.model.dto.GatewayDTO;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.stereotype.Component;
 
@@ -12,12 +13,11 @@ import javax.annotation.Resource;
  */
 @Component
 public class ChannelSendMessageProducer {
-    private static final String SEND_CHANNEL_MESSAGE_TOPIC = "sendChannelMsg";
     @Resource
     private RocketMQTemplate rocketMQTemplate;
 
-    public void sendChannelMsgTopic(GatewayVO msg) {
-        rocketMQTemplate.convertAndSend(SEND_CHANNEL_MESSAGE_TOPIC, msg);
+    public void sendChannelMsgTopic(GatewayDTO msg) {
+        rocketMQTemplate.convertAndSend(NanshuGatewayConstants.SEND_CHANNEL_MESSAGE_TOPIC, msg);
     }
 
 }

@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>nanshu-gateway-logic</artifactId>
+    <artifactId>nanshu-gateway-job</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -21,44 +21,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-json</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.ngbs.nanshu.gateway</groupId>
-            <artifactId>nanshu-gateway-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ngbs.nanshu.gateway</groupId>
-            <artifactId>nanshu-gateway-logic-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
         </dependency>
 
         <dependency>
@@ -81,6 +43,16 @@
             <groupId>org.apache.tomcat</groupId>
             <artifactId>annotations-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ngbs.nanshu.gateway</groupId>
+            <artifactId>nanshu-gateway-common</artifactId>
         </dependency>
     </dependencies>
 

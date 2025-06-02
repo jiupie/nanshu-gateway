@@ -1,7 +1,7 @@
 package com.ngbs.nanshu.gateway.comet.application.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ngbs.gateway.common.model.vo.GatewayVO;
+import com.ngbs.gateway.common.model.dto.GatewayDTO;
 import com.ngbs.nanshu.gateway.comet.server.RemotingUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -28,14 +28,14 @@ public class SendChannelMessageConsumer implements RocketMQListener<MessageExt> 
     @Override
     public void onMessage(MessageExt message) {
         try {
-            GatewayVO gatewayVO = objectMapper.readValue(message.getBody(), GatewayVO.class);
-            List<String> channelIds = gatewayVO.getChannelIds();
+            GatewayDTO gatewayDTO = objectMapper.readValue(message.getBody(), GatewayDTO.class);
+            List<String> channelIds = gatewayDTO.getChannelIds();
             for (String channelId : channelIds) {
                 Channel channel = RemotingUtil.getChannel(channelId);
-                if (channel == null || gatewayVO.getData() == null) {
+                if (channel == null || gatewayDTO.getData() == null) {
                     continue;
                 }
-                String msgData = objectMapper.writeValueAsString(gatewayVO.getData());
+                String msgData = objectMapper.writeValueAsString(gatewayDTO.getData());
                 TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(msgData);
                 channel.writeAndFlush(textWebSocketFrame);
             }
