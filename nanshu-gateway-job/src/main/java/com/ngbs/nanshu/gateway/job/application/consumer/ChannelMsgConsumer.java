@@ -12,6 +12,5 @@ public class ChannelMsgConsumer implements RocketMQListener<GatewayDTO> {
 
     @Override
     public void onMessage(GatewayDTO gatewayDTO) {
-
     }
 }

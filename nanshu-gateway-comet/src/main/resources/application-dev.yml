@@ -1,7 +1,6 @@
 rocketmq:
   name-server: 127.0.0.1:9876
-dubbo:
-  registry:
-    address: nacos://localhost:8848?namespace=dev
+nacos:
+  serverAddr: nacos://127.0.0.1:8848
 grpc:
   port: 10235

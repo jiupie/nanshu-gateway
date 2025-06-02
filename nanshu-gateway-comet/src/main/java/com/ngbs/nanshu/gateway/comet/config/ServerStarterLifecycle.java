@@ -21,9 +21,7 @@ public class ServerStarterLifecycle implements SmartLifecycle, ApplicationContex
     @Override
     public void start() {
         this.nettyServer = applicationContext.getBean(NettyServer.class);
-        new Thread(() -> {
-            nettyServer.start();
-        }, "nettyServer").start();
+        nettyServer.start();
         this.running = true;
     }
 

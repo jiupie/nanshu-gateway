@@ -10,3 +10,7 @@ spring:
     active: dev
   application:
     name: gateway-comet
+grpc:
+  logic-service: nacos://gateway-logic
+nacos:
+  service-name: ${spring.application.name}

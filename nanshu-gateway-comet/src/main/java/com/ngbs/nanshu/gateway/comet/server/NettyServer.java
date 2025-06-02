@@ -73,7 +73,7 @@ public class NettyServer {
     }
 
     public String server() {
-       return serverBootstrap.config().localAddress().toString();
+        return serverBootstrap.config().localAddress().toString();
     }
 
     private void loadProcess() {
@@ -96,7 +96,7 @@ public class NettyServer {
             try {
                 this.sslContext = TlsHelper.buildSslContext(false);
             } catch (IOException | CertificateException e) {
-                e.printStackTrace();
+                log.error("load ssl ex:", e);
             }
         }
     }
@@ -106,7 +106,7 @@ public class NettyServer {
             return;
         }
         synchronized (daemonLock) {
-            if(started){
+            if (started) {
                 return;
             }
             this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(nettyServerConfig.getServerWorkerThreads(), new ThreadFactory() {
@@ -150,9 +150,8 @@ public class NettyServer {
                     });
 
             try {
-                Channel channel = this.serverBootstrap.bind().channel();
+                this.serverBootstrap.bind().sync();
                 log.info("Gateway Server started on port(s): {} (websocket) ", this.nettyServerConfig.getListenPort());
-                channel.closeFuture().sync();
             } catch (InterruptedException e1) {
                 throw new RuntimeException("this.serverBootstrap.bind().sync() InterruptedException", e1);
             }
