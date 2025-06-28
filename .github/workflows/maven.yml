@@ -40,17 +40,17 @@ jobs:
       - name: Build nanshu-gateway-comet docker images
         if: ${{ github.event.inputs.nanshu-gateway-comet =='true'}}
         run: |
-          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-comet:$IMAGE_TAG -f nanshu-gateway-comet/Dockerfile .
+          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-comet:$IMAGE_TAG -f nanshu-gateway-comet/docker/Dockerfile .
           docker push registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-comet:$IMAGE_TAG
 
       - name: Build nanshu-gateway-job docker images
         if: ${{ github.event.inputs.nanshu-gateway-job =='true'}}
         run: |
-          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-job:$IMAGE_TAG -f nanshu-gateway-comet/Dockerfile  .
+          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-job:$IMAGE_TAG -f nanshu-gateway-comet/docker/Dockerfile  .
           docker push registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-job:$IMAGE_TAG
 
       - name: Build nanshu-gateway-logic docker images
         if: ${{ github.event.inputs.nanshu-gateway-logic =='true'}}
         run: |
-          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-logic:$IMAGE_TAG -f nanshu-gateway-comet/Dockerfile .
+          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-logic:$IMAGE_TAG -f nanshu-gateway-comet/docker/Dockerfile .
           docker push registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-logic:$IMAGE_TAG
