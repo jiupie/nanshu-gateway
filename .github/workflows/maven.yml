@@ -41,7 +41,7 @@ jobs:
         run: mvn -B package --file pom.xml  -Dmaven.test.skip=true
 
       - name: Login to Tencent Cloud
-        run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }} ccr.ccs.tencentyun.com
+        run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }} ccr.ccs.tencentyun.com
 
       - name: Build nanshu-gateway-comet docker images
         if: ${{ github.event.inputs.nanshu-gateway-comet =='true'}}
