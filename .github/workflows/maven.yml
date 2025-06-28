@@ -30,18 +30,17 @@ jobs:
 
       # 生成时间戳
       - name: Generate Timestamp
-        id: timestamp
-        run: echo "::save-state name=timestamp::$(TZ='Asia/Shanghai' date '+%Y%m%d%H%M%S')"
+        run: echo "TIMESTAMP=$(date '+%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
       # 设置环境变量
       - name: Set Image Version
-        run: echo "IMAGE_VERSION=v1.0.${{ steps.timestamp.outputs.timestamp }}" >> $GITHUB_ENV
+        run: echo "IMAGE_VERSION=v1.0.${{ env.TIMESTAMP }}" >> $GITHUB_ENV
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml  -Dmaven.test.skip=true
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3.4.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
