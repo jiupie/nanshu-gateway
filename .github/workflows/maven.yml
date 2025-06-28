@@ -31,7 +31,7 @@ jobs:
       # 生成时间戳
       - name: Generate Timestamp
         id: timestamp
-        run: echo "::set-output name=timestamp::$(date '+%Y%m%d%H%M%S')"
+        run: echo "::save-state name=timestamp::$(date '+%Y%m%d%H%M%S')"
 
       # 设置环境变量
       - name: Set Image Version
@@ -50,13 +50,15 @@ jobs:
       - name: Build nanshu-gateway-comet docker images
         if: ${{ github.event.inputs.nanshu-gateway-comet =='true'}}
         run: |
-          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}} -f nanshu-gateway-comet/docker/Dockerfile .
+          cd nanshu-gateway-comet
+          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}} -f docker/Dockerfile .
           docker push registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}}
 
       - name: Build nanshu-gateway-job docker images
         if: ${{ github.event.inputs.nanshu-gateway-job =='true'}}
         run: |
-          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}} -f nanshu-gateway-comet/docker/Dockerfile  .
+          cd nanshu-gateway-job
+          docker build -t registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}} -f docker/Dockerfile  .
           docker push registry.cn-hangzhou.aliyuncs.com/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}}
 
       - name: Build nanshu-gateway-logic docker images
