@@ -63,5 +63,6 @@ jobs:
       - name: Build nanshu-gateway-logic docker images
         if: ${{ github.event.inputs.nanshu-gateway-logic =='true'}}
         run: |
-          docker build -t ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}} -f nanshu-gateway-comet/docker/Dockerfile .
+          cd nanshu-gateway-logic
+          docker build -t ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}} -f docker/Dockerfile .
           docker push ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}}
