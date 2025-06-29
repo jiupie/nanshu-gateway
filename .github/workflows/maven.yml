@@ -47,6 +47,7 @@ jobs:
         run: mvn -B package --file pom.xml  -Dmaven.test.skip=true
 
       - name: Build nanshu-gateway-comet docker images
+        id: build-comet
         if: ${{ github.event.inputs.nanshu-gateway-comet =='true'}}
         run: |
           cd nanshu-gateway-comet
@@ -55,6 +56,7 @@ jobs:
           echo "comet_image=ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}}" >> $GITHUB_OUTPUT
 
       - name: Build nanshu-gateway-job docker images
+        id: build-job
         if: ${{ github.event.inputs.nanshu-gateway-job =='true'}}
         run: |
           cd nanshu-gateway-job
@@ -64,6 +66,7 @@ jobs:
 
       - name: Build nanshu-gateway-logic docker images
         if: ${{ github.event.inputs.nanshu-gateway-logic =='true'}}
+        id: build-logic
         run: |
           cd nanshu-gateway-logic
           docker build -t ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}} -f docker/Dockerfile .
@@ -87,8 +90,6 @@ jobs:
           echo "message=$message" >> $GITHUB_OUTPUT
 
       - name: Invoke deployment hook
-        uses: distributhor/workflow-webhook@v3
         if: ${{ github.event.inputs.nanshu-gateway-comet =='true' || github.event.inputs.nanshu-gateway-job =='true' || github.event.inputs.nanshu-gateway-logic =='true'}}
-        with:
-          webhook_url: ${{ secrets.NOTIFY_WEBHOOK_URL }}
-          data: '{"msg_type":"text","content":{"text":"${{ steps.prepare-message.outputs.message }}"}}'
+        run: |
+          curl --location '${{ secrets.NOTIFY_WEBHOOK_URL }}' --header 'Content-Type: application/json' --data '{"msg_type":"text","content":{"text":"${{ steps.prepare-message.outputs.message }} <at user_id=\"all\">所有人</at>"}}'
