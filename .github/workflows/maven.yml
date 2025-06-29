@@ -30,7 +30,7 @@ jobs:
 
       # 生成时间戳
       - name: Generate Timestamp
-        run: echo "TIMESTAMP=$(date '+%Y%m%d%H%M%S')" >> $GITHUB_ENV
+        run: echo "TIMESTAMP=$(TZ='Asia/Shanghai' date  '+%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
       # 设置环境变量
       - name: Set Image Version
@@ -52,6 +52,7 @@ jobs:
           cd nanshu-gateway-comet
           docker build -t ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}} -f docker/Dockerfile .
           docker push ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}}
+          echo "comet_image=ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}}" >> $GITHUB_OUTPUT
 
       - name: Build nanshu-gateway-job docker images
         if: ${{ github.event.inputs.nanshu-gateway-job =='true'}}
@@ -59,6 +60,7 @@ jobs:
           cd nanshu-gateway-job
           docker build -t ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}} -f docker/Dockerfile  .
           docker push ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}}
+          echo "job_image=ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}}" >> $GITHUB_OUTPUT
 
       - name: Build nanshu-gateway-logic docker images
         if: ${{ github.event.inputs.nanshu-gateway-logic =='true'}}
@@ -66,3 +68,27 @@ jobs:
           cd nanshu-gateway-logic
           docker build -t ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}} -f docker/Dockerfile .
           docker push ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}}
+          echo "logic_image=ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}}" >> $GITHUB_OUTPUT
+
+      - name: Prepare notification message
+        id: prepare-message
+        if: ${{ github.event.inputs.nanshu-gateway-comet =='true' || github.event.inputs.nanshu-gateway-job =='true' || github.event.inputs.nanshu-gateway-logic =='true'}}
+        run: |
+          message="构建成功，推送了以下镜像：\n"
+          if [[ "${{ github.event.inputs.nanshu-gateway-comet }}" == "true" ]]; then
+            message+="- ${{ steps.build-comet.outputs.comet_image }}\n"
+          fi
+          if [[ "${{ github.event.inputs.nanshu-gateway-job }}" == "true" ]]; then
+            message+="- ${{ steps.build-job.outputs.job_image }}\n"
+          fi
+          if [[ "${{ github.event.inputs.nanshu-gateway-logic }}" == "true" ]]; then
+            message+="- ${{ steps.build-logic.outputs.logic_image }}\n"
+          fi
+          echo "message=$message" >> $GITHUB_OUTPUT
+
+      - name: Invoke deployment hook
+        uses: distributhor/workflow-webhook@v3
+        if: ${{ github.event.inputs.nanshu-gateway-comet =='true' || github.event.inputs.nanshu-gateway-job =='true' || github.event.inputs.nanshu-gateway-logic =='true'}}
+        with:
+          webhook_url: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+          data: '{"msg_type":"text","content":{"text":"${{ steps.prepare-message.outputs.message }}"}}'
