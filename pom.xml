@@ -17,7 +17,7 @@
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <swagger.version>3.0.0</swagger.version>
         <grpc.version>1.54.1</grpc.version>
-        <project.name>${build.finalName}</project.name>
+        <project.name>${project.build.finalName}</project.name>
         <revision>1.2.0</revision>
         <maven.flatten.version>1.6.0</maven.flatten.version>
     </properties>
