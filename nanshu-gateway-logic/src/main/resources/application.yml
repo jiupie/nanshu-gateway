@@ -8,3 +8,5 @@ rocketmq:
     group: gatewayApiConsumerGroup
   producer:
     group: gatewayApiProduceGroup
+grpc:
+  port: 10233

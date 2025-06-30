@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: nanshu-gateway
+  labels:
+    app: nanshu-gateway-comet
+  name: nanshu-gateway-comet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nanshu-gateway-comet
+  template:
+    metadata:
+      labels:
+        app: nanshu-gateway-comet
+      annotations:
+        kubesphere.io/imagepullsecrets: '{}'
+    spec:
+      containers:
+        - name: nanshu-gateway-comet
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: '1'
+              memory: 512Mi
+          ports:
+            - name: tcp-0
+              protocol: TCP
+              containerPort: 8888
+              servicePort: 8888
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime
+              readOnly: true
+          livenessProbe:
+            initialDelaySeconds: 0
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            tcpSocket:
+              port: 8888
+          readinessProbe:
+            initialDelaySeconds: 0
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            tcpSocket:
+              port: 8888
+          startupProbe:
+            initialDelaySeconds: 0
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            tcpSocket:
+              port: 8888
+          image: >-
+            ccr.ccs.tencentyun.com/nangubeishang/nanshu-gateway-comet:v1.0.20250629020708
+      terminationGracePeriodSeconds: 30
+      initContainers: []
+      volumes:
+        - hostPath:
+            path: /etc/localtime
+            type: ''
+          name: host-time
+      imagePullSecrets: []
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  serviceName: nanshu-gateway-comet-krk6
+  revisionHistoryLimit: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: nanshu-gateway
+  labels:
+    app: nanshu-gateway-comet
+  name: nanshu-gateway-comet-krk6
+  annotations:
+    kubesphere.io/alias-name: nanshu-gateway-comet
+    kubesphere.io/serviceType: statefulservice
+spec:
+  sessionAffinity: None
+  selector:
+    app: nanshu-gateway-comet
+  ports:
+    - name: tcp-0
+      protocol: TCP
+      port: 8888
+      targetPort: 8888
+  clusterIP: None
