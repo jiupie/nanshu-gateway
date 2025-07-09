@@ -1,20 +1,21 @@
-package com.ngbs.gateway.common.reslover.nacos;
-
+package com.nanshu.grpc.nacos;
 
 import com.alibaba.nacos.api.naming.NamingService;
+import com.nanshu.grpc.nacos.properties.GrpcProperties;
 import io.grpc.NameResolver;
 import io.grpc.NameResolverProvider;
 
 import java.net.URI;
-import java.util.Properties;
 
 public class NacosNameResolverProvider extends NameResolverProvider {
 
     protected static final String NACOS = "nacos";
-    private NamingService namingService;
+    private final GrpcProperties grpcProperties;
+    private final NamingService namingService;
 
-    public NacosNameResolverProvider(NamingService namingService) {
+    public NacosNameResolverProvider(NamingService namingService, GrpcProperties grpcProperties) {
         this.namingService = namingService;
+        this.grpcProperties = grpcProperties;
     }
 
     @Override
@@ -30,8 +31,7 @@ public class NacosNameResolverProvider extends NameResolverProvider {
 
     @Override
     public NameResolver newNameResolver(URI targetUri, NameResolver.Args args) {
-        Properties properties = new Properties();
-        return new NacosNameResolver(properties, targetUri, namingService);
+        return new NacosNameResolver(targetUri, namingService, grpcProperties);
     }
 
     @Override

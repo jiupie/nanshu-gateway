@@ -1,4 +1,4 @@
-package com.ngbs.gateway.common.properties;
+package com.nanshu.grpc.nacos.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,6 +15,4 @@ public class NacosDiscoveryProperties {
     private String namespace = "public";
 
     private String serviceName;
-
-
 }

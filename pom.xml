@@ -29,6 +29,7 @@
         <module>nanshu-gateway-comet</module>
         <module>nanshu-gateway-api</module>
         <module>nanshu-gateway-job</module>
+        <module>nanshu-gateway-starters</module>
     </modules>
     <dependencyManagement>
         <dependencies>

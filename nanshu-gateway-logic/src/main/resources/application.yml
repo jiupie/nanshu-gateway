@@ -10,3 +10,5 @@ rocketmq:
     group: gatewayApiProduceGroup
 grpc:
   port: 10233
+nacos:
+  service-name: ${spring.application.name}

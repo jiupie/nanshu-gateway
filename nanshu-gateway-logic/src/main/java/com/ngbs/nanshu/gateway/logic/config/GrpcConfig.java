@@ -1,48 +1,37 @@
 package com.ngbs.nanshu.gateway.logic.config;
 
+import com.nanshu.grpc.nacos.properties.GrpcProperties;
 import com.ngbs.nanshu.gateway.logic.rpc.LogicConnectGrpcImpl;
 import com.ngbs.nanshu.gateway.logic.utils.IdGenerator;
 import com.ngbs.nanshu.gateway.logic.utils.RedisService;
-import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
 @Component
-public class GrpcConfig implements ApplicationContextAware, CommandLineRunner {
+public class GrpcConfig implements CommandLineRunner {
+    @Resource
+    private GrpcProperties grpcProperties;
 
-    @Value("${grpc.port}")
-    private int grpcPort;
+    @Resource
+    private RedisService redisService;
 
-    private ApplicationContext applicationContext;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+    @Resource
+    private IdGenerator idGenerator;
 
     @Override
-    public void run(String... args) throws Exception {
-        Runnable runnable = () -> {
-            RedisService redisService = this.applicationContext.getBean(RedisService.class);
-            IdGenerator idGenerator = this.applicationContext.getBean(IdGenerator.class);
-            Server server = null;
-            try {
-                server = ServerBuilder.forPort(grpcPort)
-                        .addService(new LogicConnectGrpcImpl(idGenerator, redisService))
-                        .build()
-                        .start();
-                server.awaitTermination();
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        };
-        new Thread(runnable, "grpc-server-" + grpcPort).start();
+    public void run(String... args) {
+        try {
+            ServerBuilder.forPort(grpcProperties.getPort())
+                    .addService(new LogicConnectGrpcImpl(idGenerator, redisService))
+                    .build()
+                    .start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 }
