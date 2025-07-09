@@ -10,8 +10,8 @@ spring:
     active: dev
   application:
     name: gateway-comet
-grpc:
-  logic-service: nacos://gateway-logic
-  port: 10235
 nacos:
   service-name: ${spring.application.name}
+grpc:
+  server:
+    port: 10235
