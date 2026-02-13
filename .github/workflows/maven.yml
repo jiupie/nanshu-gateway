@@ -97,13 +97,13 @@ jobs:
         run: |
           message="构建成功，推送了以下镜像：\n"
           if [[ "${{ github.event.inputs.nanshu-gateway-comet }}" == "true" ]]; then
-            message+="- ${{ steps.build-comet.outputs.comet_image }} (耗时: ${{ steps.build-comet.outputs.comet_build_time }})\n"
+            message+="${{ steps.build-comet.outputs.comet_image }} (耗时: ${{ steps.build-comet.outputs.comet_build_time }})\n"
           fi
           if [[ "${{ github.event.inputs.nanshu-gateway-job }}" == "true" ]]; then
-            message+="- ${{ steps.build-job.outputs.job_image }} (耗时: ${{ steps.build-job.outputs.job_build_time }})\n"
+            message+="${{ steps.build-job.outputs.job_image }} (耗时: ${{ steps.build-job.outputs.job_build_time }})\n"
           fi
           if [[ "${{ github.event.inputs.nanshu-gateway-logic }}" == "true" ]]; then
-            message+="- ${{ steps.build-logic.outputs.logic_image }} (耗时: ${{ steps.build-logic.outputs.logic_build_time }})\n"
+            message+="${{ steps.build-logic.outputs.logic_image }} (耗时: ${{ steps.build-logic.outputs.logic_build_time }})\n"
           fi
           echo "message=$message" >> $GITHUB_OUTPUT
 
@@ -112,4 +112,11 @@ jobs:
         run: |
           curl --location '${{ secrets.NOTIFY_WEBHOOK_URL }}' \
             --header 'Content-Type: application/json' \
-            --data '{"content":"{\"zh_cn\":{\"title\":\"构建结果\",\"content\":[[{\"tag\":\"md\",\"text\":\"${{ steps.prepare-message.outputs.message }} <at user_id=\"all\">所有人</at>\"}]]}}","msg_type":"post"}'
+            --data '{"content":{"post":{"zh_cn":{"title":"构建结果","content":[[{"tag":"text","text":"${{ steps.prepare-message.outputs.message }}"}],[{"tag":"a","text":"详情请查看","href":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}],[{"tag":"at","user_id":"all","user_name":"所有人"}]]}}},"msg_type":"post"}'
+
+      - name: Send failure notification
+        if: failure()
+        run: |
+          curl --location '${{ secrets.NOTIFY_WEBHOOK_URL }}' \
+            --header 'Content-Type: application/json' \
+            --data '{"content":{"post":{"zh_cn":{"title":"构建失败","content":[[{"tag":"text","text":"nanshu-gateway 构建失败，"}],[{"tag":"a","text":"详情请查看","href":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}],[{"tag":"at","user_id":"all","user_name":"所有人"}]]}}},"msg_type":"post"}'
