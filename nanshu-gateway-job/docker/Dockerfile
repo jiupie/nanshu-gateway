@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jdk-ubi9-minimal
+FROM eclipse-temurin:21-jdk-ubi9-minimal
 WORKDIR /app
 ADD ./target/*.jar app.jar
 ENV JAVA_OPTS=""

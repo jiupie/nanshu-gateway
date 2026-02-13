@@ -44,7 +44,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml  -Dmaven.test.skip=true
+        run: mvn -B package --file pom.xml  -Dmaven.test.skip=true -Drevision=${{ env.IMAGE_VERSION }}
 
       - name: Build nanshu-gateway-comet docker images
         id: build-comet
