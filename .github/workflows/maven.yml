@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       nanshu-gateway-comet:
-        description: "nanshu-gateway-comet"
+        description: 'nanshu-gateway-comet'
         required: true
-        default: "false"
+        default: 'false'
       nanshu-gateway-job:
-        description: "nanshu-gateway-job"
+        description: 'nanshu-gateway-job'
         required: true
-        default: "false"
+        default: 'false'
       nanshu-gateway-logic:
-        description: "nanshu-gateway-logic"
+        description: 'nanshu-gateway-logic'
         required: true
-        default: "false"
+        default: 'false'
 
 jobs:
   build:
@@ -50,28 +50,46 @@ jobs:
         id: build-comet
         if: ${{ github.event.inputs.nanshu-gateway-comet =='true'}}
         run: |
+          START_TIME=$(date +%s)
           cd nanshu-gateway-comet
           docker build -t ${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}} -f docker/Dockerfile .
           docker push ${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}}
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          MINUTES=$((BUILD_TIME / 60))
+          SECONDS=$((BUILD_TIME % 60))
           echo "comet_image=${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-comet:${{env.IMAGE_VERSION}}" >> $GITHUB_OUTPUT
+          echo "comet_build_time=${MINUTES}分${SECONDS}秒" >> $GITHUB_OUTPUT
 
       - name: Build nanshu-gateway-job docker images
         id: build-job
         if: ${{ github.event.inputs.nanshu-gateway-job =='true'}}
         run: |
+          START_TIME=$(date +%s)
           cd nanshu-gateway-job
           docker build -t ${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}} -f docker/Dockerfile  .
           docker push ${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}}
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          MINUTES=$((BUILD_TIME / 60))
+          SECONDS=$((BUILD_TIME % 60))
           echo "job_image=${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-job:${{env.IMAGE_VERSION}}" >> $GITHUB_OUTPUT
+          echo "job_build_time=${MINUTES}分${SECONDS}秒" >> $GITHUB_OUTPUT
 
       - name: Build nanshu-gateway-logic docker images
         if: ${{ github.event.inputs.nanshu-gateway-logic =='true'}}
         id: build-logic
         run: |
+          START_TIME=$(date +%s)
           cd nanshu-gateway-logic
           docker build -t ${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}} -f docker/Dockerfile .
           docker push ${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}}
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          MINUTES=$((BUILD_TIME / 60))
+          SECONDS=$((BUILD_TIME % 60))
           echo "logic_image=${{vars.DOCKER_REGISTRY_URL}}/nangubeishang/nanshu-gateway-logic:${{env.IMAGE_VERSION}}" >> $GITHUB_OUTPUT
+          echo "logic_build_time=${MINUTES}分${SECONDS}秒" >> $GITHUB_OUTPUT
 
       - name: Prepare notification message
         id: prepare-message
@@ -79,17 +97,19 @@ jobs:
         run: |
           message="构建成功，推送了以下镜像：\n"
           if [[ "${{ github.event.inputs.nanshu-gateway-comet }}" == "true" ]]; then
-            message+="- ${{ steps.build-comet.outputs.comet_image }}\n"
+            message+="- ${{ steps.build-comet.outputs.comet_image }} (耗时: ${{ steps.build-comet.outputs.comet_build_time }})\n"
           fi
           if [[ "${{ github.event.inputs.nanshu-gateway-job }}" == "true" ]]; then
-            message+="- ${{ steps.build-job.outputs.job_image }}\n"
+            message+="- ${{ steps.build-job.outputs.job_image }} (耗时: ${{ steps.build-job.outputs.job_build_time }})\n"
           fi
           if [[ "${{ github.event.inputs.nanshu-gateway-logic }}" == "true" ]]; then
-            message+="- ${{ steps.build-logic.outputs.logic_image }}\n"
+            message+="- ${{ steps.build-logic.outputs.logic_image }} (耗时: ${{ steps.build-logic.outputs.logic_build_time }})\n"
           fi
           echo "message=$message" >> $GITHUB_OUTPUT
 
       - name: Invoke deployment hook
         if: ${{ github.event.inputs.nanshu-gateway-comet =='true' || github.event.inputs.nanshu-gateway-job =='true' || github.event.inputs.nanshu-gateway-logic =='true'}}
         run: |
-          curl --location '${{ secrets.NOTIFY_WEBHOOK_URL }}' --header 'Content-Type: application/json' --data '{"msg_type":"text","content":{"text":"${{ steps.prepare-message.outputs.message }} <at user_id=\"all\">所有人</at>"}}'
+          curl --location '${{ secrets.NOTIFY_WEBHOOK_URL }}' \
+            --header 'Content-Type: application/json' \
+            --data '{"content":"{\"zh_cn\":{\"title\":\"构建结果\",\"content\":[[{\"tag\":\"md\",\"text\":\"${{ steps.prepare-message.outputs.message }} <at user_id=\"all\">所有人</at>\"}]]}}","msg_type":"post"}'
